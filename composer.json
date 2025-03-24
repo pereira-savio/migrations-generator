@@ -10,6 +10,9 @@
             "role": "Developer"
         }
     ],
+    "support": {
+        "email": "saviorenato@gmail.com"
+    },
     "autoload": {
         "psr-4": {
             "Migrations\\MigrationsGenerator\\": "src/"
