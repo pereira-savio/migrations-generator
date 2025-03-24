@@ -1,6 +1,6 @@
 <?php
 
-namespace SeuNome\MigrationsGenerator\Console;
+namespace Migrations\MigrationsGenerator\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
