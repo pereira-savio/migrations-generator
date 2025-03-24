@@ -1,0 +1,29 @@
+{
+    "name": "saviorenato/migrations-generator",
+    "description": "Pacote Laravel para gerar automaticamente arquivos de migrations a partir do banco de dados",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sávio Pereira",
+            "email": "saviorenato@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Migrations\\MigrationsGenerator\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=7.2",
+        "illuminate/support": "^7.0|^8.0|^9.0|^10.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Migrations\\MigrationsGenerator\\MigrationsGeneratorServiceProvider"
+            ]
+        }
+    }
+}
