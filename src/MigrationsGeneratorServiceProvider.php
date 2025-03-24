@@ -19,5 +19,8 @@ class MigrationsGeneratorServiceProvider extends ServiceProvider
     public function register()
     {
         // Aqui você pode mesclar configurações ou registrar bindings se necessário.
+        if ($this->app->environment() !== 'production') {
+
+        }
     }
 }
