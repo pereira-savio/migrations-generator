@@ -57,7 +57,10 @@ class GenerateMigrationsCommand extends Command
                 sleep(1);
             }
         } elseif ($driver === 'pgsql') {
-            $tables = DB::select("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type='BASE TABLE'");
+
+            $schemaName = DB::getDatabaseName();
+
+            $tables = DB::select("SELECT table_name FROM information_schema.tables WHERE table_schema = $schemaName AND table_type='BASE TABLE'");
 
             foreach ($tables as $table) {
                 $tableName = $table->table_name;
@@ -73,7 +76,7 @@ class GenerateMigrationsCommand extends Command
                 $columns = DB::select(
                     "SELECT column_name, data_type, is_nullable, column_default
                      FROM information_schema.columns
-                     WHERE table_schema = 'public' AND table_name = ?",
+                     WHERE table_schema = $schemaName AND table_name = ?",
                      [$tableName]
                 );
                 $schemaFields = "";
