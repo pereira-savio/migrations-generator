@@ -4,32 +4,64 @@ namespace Migrations\MigrationsGenerator\Drivers;
 
 use Illuminate\Support\Facades\DB;
 use Migrations\MigrationsGenerator\Contracts\MigrationGeneratorInterface;
+use Migrations\MigrationsGenerator\Files\Migrations;
+use Migrations\MigrationsGenerator\Files\Seeds;
 use Migrations\MigrationsGenerator\Message;
-use Migrations\MigrationsGenerator\Services\GenerateMigrations;
 use Migrations\MigrationsGenerator\Services\SkipMigrationsTableFilter;
 
 class PostgresGenerator implements MigrationGeneratorInterface
 {
     protected SkipMigrationsTableFilter $filter;
 
-    protected GenerateMigrations $migration;
+    protected Migrations $migrations;
+
+    protected Seeds $seeds;
 
     public function __construct()
     {
         $this->filter = new SkipMigrationsTableFilter;
-        $this->migration = new GenerateMigrations;
+        $this->migrations = new Migrations;
+        $this->seeds = new Seeds;
     }
 
     /**
      * Gera as migrations para todas as tabelas do banco de dados PostgreSQL.
-     *
      * @return void
      */
-    public function generate(): void
+    public function migrations(): void
     {
-        $schemaName = DB::getDatabaseName();
+        $this->generateMigrations();
+    }
 
+    /**
+     * Gera as seeds para todas as tabelas do banco de dados PostgreSQL.
+     * @return void
+     */
+    public function seeds(): void
+    {
+        $this->generateSeeds();
+    }
+
+    /**
+     * Obtém o nome do banco de dados atual.
+     *
+     * @return string Nome do banco de dados
+     */
+    public function getDatabaseName(): string
+    {
+        return DB::getDatabaseName();
+    }
+
+    /**
+     * Encontra todas as tabelas do banco de dados atual, ignorando aquelas que devem ser puladas.
+     *
+     * @return array Lista de nomes das tabelas encontradas
+     */
+    public function findTables(): array
+    {
+        $schemaName = $this->getDatabaseName();
         $tables = DB::select("SELECT table_name FROM information_schema.tables WHERE table_schema = $schemaName AND table_type='BASE TABLE'");
+        $tableNames = [];
 
         foreach ($tables as $table) {
             $tableName = $table->table_name;
@@ -39,15 +71,34 @@ class PostgresGenerator implements MigrationGeneratorInterface
                 continue;
             }
 
-            echo Message::info($tableName, "Gerando migration para a tabela:");
+            $tableNames[] = $tableName;
+        }
+
+        return $tableNames;
+    }
+
+    /**
+     * Gera as migrations para cada tabela encontrada no banco de dados.
+     *
+     * @return void
+     */
+    public function generateMigrations(): void
+    {
+        $schemaName = $this->getDatabaseName();
+        $tables = $this->findTables();
+
+        foreach ($tables as $table) {
+
+            echo Message::info($table, 'Gerando migration para a tabela:');
 
             // Recupera as colunas da tabela no PostgreSQL
             $columns = DB::select(
                 "SELECT column_name, data_type, is_nullable, column_default
                     FROM information_schema.columns
                     WHERE table_schema = $schemaName AND table_name = ?",
-                [$tableName]
+                [$table]
             );
+
             $schemaFields = '';
 
             foreach ($columns as $column) {
@@ -65,7 +116,41 @@ class PostgresGenerator implements MigrationGeneratorInterface
                 }
             }
 
-            $this->migration->generate($tableName, $schemaFields);
+            $this->migrations->generate($table, $schemaFields);
+            sleep(1);
+        }
+    }
+
+    /**
+     * Gera as seeds para cada tabela encontrada no banco de dados.
+     * 
+     * @return void
+     */
+    public function generateSeeds(): void
+    {
+        $tables = $this->findTables();
+
+        foreach ($tables as $tableName) {
+
+            echo Message::info($tableName, 'Gerando seed para a tabela:');
+
+            // Recupera os dados da tabela no PostgreSQL
+            $rows = DB::select("SELECT * FROM \"$tableName\"");
+            if (empty($rows)) {
+                echo Message::warning($tableName, '-- Tabela vazia, seed não gerada.');
+
+                continue;
+            }
+
+            $seedData = [];
+
+            foreach ($rows as $row) {
+                $seedData[] = (array) $row;
+            }
+
+            echo Message::info($tableName, '-- Gerando seed com '.count($seedData).' registros.');
+
+            $this->seeds->generate($tableName, $seedData);
             sleep(1);
         }
     }
@@ -73,8 +158,8 @@ class PostgresGenerator implements MigrationGeneratorInterface
     /**
      * Mapeia o tipo de coluna do PostgreSQL para o tipo correspondente no Laravel.
      *
-     * @param string $dbType Tipo da coluna no banco de dados
-     * @param string $driver Nome do driver (neste caso, 'pgsql')
+     * @param  string  $dbType  Tipo da coluna no banco de dados
+     * @param  string  $driver  Nome do driver (neste caso, 'pgsql')
      * @return string Tipo correspondente no Laravel
      */
     public function mapColumnType(string $dbType, string $driver): string

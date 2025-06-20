@@ -4,41 +4,80 @@ namespace Migrations\MigrationsGenerator\Drivers;
 
 use Illuminate\Support\Facades\DB;
 use Migrations\MigrationsGenerator\Contracts\MigrationGeneratorInterface;
+use Migrations\MigrationsGenerator\Files\Migrations;
+use Migrations\MigrationsGenerator\Files\Seeds;
 use Migrations\MigrationsGenerator\Message;
-use Migrations\MigrationsGenerator\Services\GenerateMigrations;
 use Migrations\MigrationsGenerator\Services\SkipMigrationsTableFilter;
 
 class MySqlGenerator implements MigrationGeneratorInterface
 {
     protected SkipMigrationsTableFilter $filter;
 
-    protected GenerateMigrations $migration;
+    protected Migrations $migrations;
+
+    protected Seeds $seeds;
 
     public function __construct()
     {
         $this->filter = new SkipMigrationsTableFilter;
-        $this->migration = new GenerateMigrations;
+        $this->migrations = new Migrations;
+        $this->seeds = new Seeds;
     }
 
     /**
      * Gera as migrations para todas as tabelas do banco de dados MySQL.
-     *
      * @return void
      */
-    public function generate(): void
+    public function migrations(): void
+    {
+        $this->generateMigrations();
+    }
+
+    /**
+     * Gera as seeds para todas as tabelas do banco de dados MySQL.
+     * @return void
+     */
+    public function seeds(): void
+    {
+        $this->generateSeeds();
+    }
+
+    /**
+     * Encontra todas as tabelas do banco de dados atual, ignorando aquelas que devem ser puladas.
+     *
+     * @return array Lista de nomes das tabelas encontradas
+     */
+    public function findTables(): array
     {
         $tables = DB::connection()
             ->getDoctrineSchemaManager()
             ->listTableNames();
+        $tableNames = [];
 
-        foreach ($tables as $tableName) {
-
+        foreach ($tables as $table) {
             // Pular tabelas que devem ser ignoradas
-            if ($this->filter->shouldSkip($tableName)) {
+            if ($this->filter->shouldSkip($table)) {
                 continue;
             }
 
-            echo Message::info($tableName, "Gerando migration para a tabela:");
+            $tableNames[] = $table;
+        }
+
+        return $tableNames;
+    }
+
+    /**
+     * Gera as migrations para cada tabela encontrada no banco de dados.
+     *
+     * @return void
+     */
+    public function generateMigrations(): void
+    {
+        $tables = $this->findTables();
+
+        foreach ($tables as $tableName) {
+
+            echo Message::info($tableName, 'Gerando migration para a tabela:');
 
             // Recupera as colunas da tabela no MySQL
             $columns = DB::select("SHOW COLUMNS FROM `$tableName`");
@@ -59,7 +98,41 @@ class MySqlGenerator implements MigrationGeneratorInterface
                 }
             }
 
-            $this->migration->generate($tableName, $schemaFields);
+            $this->migrations->generate($tableName, $schemaFields);
+            sleep(1);
+        }
+    }
+
+    /**
+     * Gera as seeds para cada tabela encontrada no banco de dados.
+     * 
+     * @return void
+     */
+    public function generateSeeds(): void
+    {
+        $tables = $this->findTables();
+
+        foreach ($tables as $tableName) {
+
+            echo Message::info($tableName, 'Gerando seed para a tabela:');
+
+            // Recupera os dados da tabela no MySQL
+            $rows = DB::select("SELECT * FROM `$tableName`");
+            if (empty($rows)) {
+                echo Message::warning($tableName, '-- Tabela vazia, seed não gerada.');
+
+                continue;
+            }
+
+            $seedData = [];
+
+            foreach ($rows as $row) {
+                $seedData[] = (array) $row;
+            }
+
+            echo Message::info($tableName, '-- Gerando seed com '.count($seedData).' registros.');
+
+            $this->seeds->generate($tableName, $seedData);
             sleep(1);
         }
     }
@@ -67,8 +140,8 @@ class MySqlGenerator implements MigrationGeneratorInterface
     /**
      * Mapeia o tipo de coluna do banco de dados para o tipo de coluna do Laravel.
      *
-     * @param string $dbType Tipo da coluna no banco de dados
-     * @param string $driver Nome do driver do banco de dados (mysql, mariadb, pgsql)
+     * @param  string  $dbType  Tipo da coluna no banco de dados
+     * @param  string  $driver  Nome do driver do banco de dados (mysql, mariadb, pgsql)
      * @return string Tipo de coluna correspondente no Laravel
      */
     public function mapColumnType(string $dbType, string $driver): string
