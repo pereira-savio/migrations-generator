@@ -8,6 +8,11 @@ use Migrations\MigrationsGenerator\Console\GenerateMigrationsCommand;
 
 class MigrationsGeneratorServiceProvider extends ServiceProvider
 {
+    /**
+     * Bootstrap any application services.
+     *
+     * @return void
+     */
     public function boot()
     {
         if ($this->app->runningInConsole()) {
@@ -17,11 +22,15 @@ class MigrationsGeneratorServiceProvider extends ServiceProvider
         }
     }
 
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
     public function register()
     {
         if ($this->app->environment() !== 'production') {
             $this->app->bind(
-                DriverSelector::class,
                 DriverSelector::class
             );
         }

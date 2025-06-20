@@ -20,6 +20,11 @@ class MariaDBGenerator implements MigrationGeneratorInterface
         $this->migration = new GenerateMigrations;
     }
 
+    /**
+     * Gera as migrations para todas as tabelas do banco de dados MariaDB.
+     *
+     * @return void
+     */
     public function generate(): void
     {
         $databaseName = DB::getDatabaseName();
@@ -34,7 +39,7 @@ class MariaDBGenerator implements MigrationGeneratorInterface
                 continue;
             }
 
-            echo Message::info("Gerando migration para a tabela: $tableName");
+            echo Message::info($tableName, "Gerando migration para a tabela:");
 
             // Recupera as colunas da tabela no MySQL
             $columns = DB::select("SHOW COLUMNS FROM `$tableName`");
@@ -60,6 +65,13 @@ class MariaDBGenerator implements MigrationGeneratorInterface
         }
     }
 
+    /**
+     * Mapeia o tipo de coluna do banco de dados para o tipo de coluna do Laravel.
+     *
+     * @param string $dbType Tipo da coluna no banco de dados
+     * @param string $driver Nome do driver do banco de dados (mysql, mariadb, pgsql)
+     * @return string Tipo de coluna correspondente no Laravel
+     */
     public function mapColumnType(string $dbType, string $driver): string
     {
         if (preg_match('/^int/', $dbType)) {

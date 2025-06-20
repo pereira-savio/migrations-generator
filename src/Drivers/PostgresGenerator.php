@@ -20,6 +20,11 @@ class PostgresGenerator implements MigrationGeneratorInterface
         $this->migration = new GenerateMigrations;
     }
 
+    /**
+     * Gera as migrations para todas as tabelas do banco de dados PostgreSQL.
+     *
+     * @return void
+     */
     public function generate(): void
     {
         $schemaName = DB::getDatabaseName();
@@ -34,7 +39,7 @@ class PostgresGenerator implements MigrationGeneratorInterface
                 continue;
             }
 
-            echo Message::info("Gerando migration para a tabela: $tableName");
+            echo Message::info($tableName, "Gerando migration para a tabela:");
 
             // Recupera as colunas da tabela no PostgreSQL
             $columns = DB::select(
@@ -65,6 +70,13 @@ class PostgresGenerator implements MigrationGeneratorInterface
         }
     }
 
+    /**
+     * Mapeia o tipo de coluna do PostgreSQL para o tipo correspondente no Laravel.
+     *
+     * @param string $dbType Tipo da coluna no banco de dados
+     * @param string $driver Nome do driver (neste caso, 'pgsql')
+     * @return string Tipo correspondente no Laravel
+     */
     public function mapColumnType(string $dbType, string $driver): string
     {
         if (in_array($dbType, ['integer', 'bigint', 'smallint'])) {

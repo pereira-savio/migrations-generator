@@ -1,16 +1,21 @@
 <?php
 namespace Migrations\MigrationsGenerator\Services;
 
-use Illuminate\Support\Str;
 use Migrations\MigrationsGenerator\Message;
 
 class GenerateMigrations
 {
-    public function generate($tableName, $schemaFields)
+    /**
+     * Gera o arquivo de migration para a criação de uma tabela.
+     *
+     * @param string $tableName Nome da tabela a ser criada
+     * @param string $schemaFields Campos da tabela em formato de string
+     * @return void
+     */
+    public function generate($tableName, $schemaFields): void
     {
-        $migrationClassName = 'Create' . Str::studly($tableName) . 'Table';
         $migrationFileName = date('Y_m_d_His') . '_create_' . $tableName . '_table.php';
-        $migrationPath = base_path('database/migrations/' . $migrationFileName);
+        $migrationPath = (new BasePath)->file($migrationFileName);
 
         $content = "<?php
 
@@ -45,8 +50,13 @@ return new class extends Migration {
     }
 };";
 
-        file_put_contents($migrationPath, $content);
-        echo Message::info("Migration gerada: $migrationFileName");
+        try {
+            file_put_contents($migrationPath, $content);
+            echo Message::success($migrationFileName, "Migration criada com sucesso:");
+        } catch (\Exception $e) {
+            echo Message::error("Erro ao criar a migration: " . $e->getMessage());
+            die;
+        }
     }
 
 }
