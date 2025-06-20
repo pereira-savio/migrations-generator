@@ -20,7 +20,8 @@
     },
     "require": {
         "php": ">=7.2",
-        "illuminate/support": "^9|^10|^11|^12"
+        "illuminate/support": "^9|^10|^11|^12",
+        "illuminate/console": "^9|^10|^11|^12"
     },
     "extra": {
         "laravel": {
