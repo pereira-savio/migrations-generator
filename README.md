@@ -1,6 +1,6 @@
 # migrations-generator
 
-Pacote Laravel 12 para gerar automaticamente arquivos de migrations a partir de um banco de dados MySQL ou PostgreSQL.
+Pacote Laravel 12 para gerar automaticamente arquivos de migrations e seeds a partir de um banco de dados MySQL ou PostgreSQL.
 
 ## Requisitos
 
@@ -21,16 +21,25 @@ Pacote Laravel 12 para gerar automaticamente arquivos de migrations a partir de 
 
 ## Uso
 
-Para gerar as migrations com base na estrutura atual do banco, basta executar o comando:
+Para gerar as migrations e os seeds com base na estrutura atual do banco, basta executar os comandos:
+
+Para as migrations:
 
 ```bash
 php artisan generate:migrations
 ```
 
-Isso irá:
+Para os seeds:
+
+```bash
+php artisan generate:seeds
+```
+
+Os comandos irão:
 
 - Ler todas as tabelas do banco (exceto a tabela padrão `migrations`).
 - Criar, em `database/migrations`, arquivos de migrations nomeados no formato `YYYY_MM_DD_HHMMSS_create_{nome_tabela}_table.php`.
+- Criar, em `database/seeds`, arquivos de seed correspondentes para popular suas tabelas.
 - Cada migration gerada conterá:
   - Método `up()` com `Schema::create('{tabela}', …)` para recriar a tabela.
   - Método `down()` com `Schema::dropIfExists('{tabela}')` para excluir a tabela.
@@ -43,6 +52,8 @@ Se quiser ajustar algum detalhe, edite o comando em:
 src/Console/GenerateMigrationsCommand.php
 ```
 
+ou no comando de seeds, se aplicável.
+
 ## Limitações
 
 - Não gera índices, chaves estrangeiras, triggers ou constraints.
@@ -54,15 +65,14 @@ src/Console/GenerateMigrationsCommand.php
 2. Crie uma branch para sua feature ou correção:
 
    ```bash
+   git checkout -b feature-nova
    ```
 
-git checkout -b feature-nova
-
-````
 3. Faça commit das suas alterações:
+
    ```bash
-git commit -m "Descrição da sua contribuição"
-````
+   git commit -m "Descrição da sua contribuição"
+   ```
 
 4. Envie um pull request para análise.
 
@@ -72,4 +82,4 @@ Este projeto está licenciado sob a licença MIT. Consulte o arquivo [LICENSE.tx
 
 ## Autor
 
-Sávio Pereira ([saviorenato@gmail.com](mailto\:saviorenato@gmail.com))
+Sávio Pereira ([saviorenato@gmail.com](mailto:saviorenato@gmail.com))
