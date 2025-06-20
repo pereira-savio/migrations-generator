@@ -1,5 +1,5 @@
 {
-    "name": "saviorenato/migrations-generator",
+    "name": "migrations/migrations-generator",
     "description": "Pacote Laravel para gerar automaticamente arquivos de migrations a partir do banco de dados",
     "type": "library",
     "license": "MIT",
@@ -20,7 +20,8 @@
     },
     "require": {
         "php": ">=7.2",
-        "illuminate/support": "^9|^10|^11|^12"
+        "illuminate/support": "^9|^10|^11|^12",
+        "illuminate/console": "^9|^10|^11|^12"
     },
     "extra": {
         "laravel": {
