@@ -4,6 +4,7 @@ namespace Migrations\MigrationsGenerator;
 
 use Illuminate\Support\ServiceProvider;
 use Migrations\MigrationsGenerator\Services\DriverSelector;
+use Migrations\MigrationsGenerator\Console\GenerateSeedsCommand;
 use Migrations\MigrationsGenerator\Console\GenerateMigrationsCommand;
 
 class MigrationsGeneratorServiceProvider extends ServiceProvider
@@ -18,6 +19,7 @@ class MigrationsGeneratorServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 GenerateMigrationsCommand::class,
+                GenerateSeedsCommand::class,
             ]);
         }
     }
