@@ -23,7 +23,7 @@ class GenerateMigrationsCommand extends Command
 
         $driver = Config::get('database.default');
         $generator = $selector->select($driver);
-        $generator->seeds();
+        $generator->migrations();
 
         $this->info("Processo executado para o driver '{$driver}'.");
         $this->info('Geração de migrations concluída!');
