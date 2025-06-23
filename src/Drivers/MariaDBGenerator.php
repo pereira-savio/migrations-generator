@@ -159,6 +159,8 @@ class MariaDBGenerator implements MigrationGeneratorInterface
             return 'string';
         } elseif (preg_match('/^text/', $dbType)) {
             return 'text';
+        } elseif (preg_match('/^longtext/', $dbType)) {
+            return 'longText';
         } elseif (preg_match('/^datetime/', $dbType)) {
             return 'dateTime';
         } elseif (preg_match('/^date/', $dbType)) {
