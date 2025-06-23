@@ -24,7 +24,7 @@ class BasePath
     {
         try {
 
-            $basePath = $this->path->databasePath('migrations/new/');
+            $basePath = $this->path->databasePath('migrations/New/');
 
             $this->path->validatePath($basePath);
 
@@ -46,7 +46,7 @@ class BasePath
     {
         try {
 
-            $basePath = $this->path->databasePath('seeders/new/');
+            $basePath = $this->path->databasePath('seeders/New/');
             $this->path->validatePath($basePath);
 
         } catch (\Exception $e) {
