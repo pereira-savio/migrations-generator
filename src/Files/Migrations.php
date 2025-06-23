@@ -15,7 +15,7 @@ class Migrations
      */
     public function generate($tableName, $schemaFields): void
     {
-        $migrationFileName = date('Y_m_d_His').'_create_'.$tableName.'_table.php';
+        $migrationFileName = '0000_00_00_'.date('His').'_create_'.$tableName.'_table.php';
         $migrationPath = (new BasePath)->migrationsPath($migrationFileName);
 
         $content = "<?php\n\n";

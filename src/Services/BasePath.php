@@ -24,7 +24,7 @@ class BasePath
     {
         try {
 
-            $basePath = $this->path->databasePath('migrations/New/');
+            $basePath = $this->path->databasePath('migrations/');
 
             $this->path->validatePath($basePath);
 
