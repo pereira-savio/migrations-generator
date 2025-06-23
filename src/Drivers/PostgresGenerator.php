@@ -26,7 +26,6 @@ class PostgresGenerator implements MigrationGeneratorInterface
 
     /**
      * Gera as migrations para todas as tabelas do banco de dados PostgreSQL.
-     * @return void
      */
     public function migrations(): void
     {
@@ -35,7 +34,6 @@ class PostgresGenerator implements MigrationGeneratorInterface
 
     /**
      * Gera as seeds para todas as tabelas do banco de dados PostgreSQL.
-     * @return void
      */
     public function seeds(): void
     {
@@ -79,8 +77,6 @@ class PostgresGenerator implements MigrationGeneratorInterface
 
     /**
      * Gera as migrations para cada tabela encontrada no banco de dados.
-     *
-     * @return void
      */
     public function generateMigrations(): void
     {
@@ -123,8 +119,6 @@ class PostgresGenerator implements MigrationGeneratorInterface
 
     /**
      * Gera as seeds para cada tabela encontrada no banco de dados.
-     * 
-     * @return void
      */
     public function generateSeeds(): void
     {

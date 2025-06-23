@@ -7,6 +7,7 @@ use Migrations\MigrationsGenerator\Contracts\MigrationGeneratorInterface;
 use Migrations\MigrationsGenerator\Files\Migrations;
 use Migrations\MigrationsGenerator\Files\Seeds;
 use Migrations\MigrationsGenerator\Message;
+use Migrations\MigrationsGenerator\Services\BasePath;
 use Migrations\MigrationsGenerator\Services\SkipMigrationsTableFilter;
 
 class MariaDBGenerator implements MigrationGeneratorInterface
@@ -17,16 +18,18 @@ class MariaDBGenerator implements MigrationGeneratorInterface
 
     protected Seeds $seeds;
 
+    protected BasePath $path;
+
     public function __construct()
     {
         $this->filter = new SkipMigrationsTableFilter;
         $this->migrations = new Migrations;
         $this->seeds = new Seeds;
+        $this->path = new BasePath;
     }
 
     /**
      * Gera as migrations para todas as tabelas do banco de dados MariaDB.
-     * @return void
      */
     public function migrations(): void
     {
@@ -35,11 +38,11 @@ class MariaDBGenerator implements MigrationGeneratorInterface
 
     /**
      * Gera as seeds para todas as tabelas do banco de dados MariaDB.
-     * @return void
      */
     public function seeds(): void
     {
         $this->generateSeeds();
+
     }
 
     /**
@@ -70,8 +73,6 @@ class MariaDBGenerator implements MigrationGeneratorInterface
 
     /**
      * Gera as migrations para cada tabela encontrada no banco de dados.
-     *
-     * @return void
      */
     public function generateMigrations(): void
     {
@@ -108,12 +109,11 @@ class MariaDBGenerator implements MigrationGeneratorInterface
 
     /**
      * Gera as seeds para cada tabela encontrada no banco de dados.
-     * 
-     * @return void
      */
     public function generateSeeds(): void
     {
         $tables = $this->findTables();
+        $seedsName = [];
 
         foreach ($tables as $tableName) {
 
@@ -135,9 +135,13 @@ class MariaDBGenerator implements MigrationGeneratorInterface
 
             echo Message::info($tableName, '-- Gerando seed com '.count($seedData).' registros.');
 
-            $this->seeds->generate($tableName, $seedData);
+            $seedsName[] = $this->seeds->generate($tableName, $seedData);
             sleep(1);
         }
+
+        // Gera o DatabaseSeeder
+        $this->seeds->generateDatabaseSeed($seedsName);
+        echo Message::success('NewDatabaseSeeder', 'Seed criada com sucesso:');
     }
 
     /**
