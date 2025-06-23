@@ -35,6 +35,12 @@ Para os seeds:
 php artisan generate:seeds
 ```
 
+Após rodar o comando `php artisan generate:seeds`, abra o arquivo principal de seed (geralmente `database/seeds/DatabaseSeeder.php`) e adicione a linha abaixo dentro do método `run()`:
+
+```php
+$this->call((new NewDatabaseSeeder)->run());
+```
+
 Os comandos irão:
 
 - Ler todas as tabelas do banco (exceto a tabela padrão `migrations`).
