@@ -164,6 +164,8 @@ class PostgresGenerator implements MigrationGeneratorInterface
             return 'string';
         } elseif (strpos($dbType, 'text') !== false) {
             return 'text';
+        } elseif (strpos($dbType, 'longText') !== false) {
+            return 'longText';
         } elseif (strpos($dbType, 'timestamp') !== false) {
             return 'dateTime';
         } elseif ($dbType === 'date') {
