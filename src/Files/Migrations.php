@@ -27,7 +27,6 @@ class Migrations
         $content .= "    {\n";
         $content .= "        Schema::create('$tableName', function (Blueprint \$table) {\n";
         $content .= "            $schemaFields\n";
-        $content .= "            \$table->timestamps();\n";
         $content .= "        });\n";
         $content .= "    }\n";
         $content .= "\n\n";
