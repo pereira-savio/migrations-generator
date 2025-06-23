@@ -2,10 +2,18 @@
 
 namespace Migrations\MigrationsGenerator\Services;
 
+use Migrations\MigrationsGenerator\Files\Path;
 use Migrations\MigrationsGenerator\Message;
 
 class BasePath
 {
+    private Path $path;
+
+    public function __construct()
+    {
+        $this->path = new Path;
+    }
+
     /**
      * Retorna o caminho completo do arquivo de migration.
      *
@@ -15,34 +23,37 @@ class BasePath
     public function migrationsPath(string $fileName): string
     {
         try {
-            if (! is_dir(base_path('database/migrations'))) {
-                mkdir(base_path('database/migrations'), 0755, true);
-            }
+
+            $basePath = $this->path->databasePath('migrations/new/');
+
+            $this->path->validatePath($basePath);
+
         } catch (\Exception $e) {
             echo Message::error('Erro ao criar o diretório de migrations: '.$e->getMessage());
             exit;
         }
 
-        return base_path('database/migrations/'.$fileName);
+        return $basePath.$fileName;
     }
 
     /**
-     * Retorna o caminho completo do arquivo de seed.
+     * Retorna o caminho completo do arquivo de seeders.
      *
-     * @param  string  $fileName  Nome do arquivo de seed
+     * @param  string  $fileName  Nome do arquivo de seeders
      * @return string Caminho completo do arquivo
      */
     public function seedersPath(string $fileName): string
     {
         try {
-            if (! is_dir(base_path('database/seeders'))) {
-                mkdir(base_path('database/seeders'), 0755, true);
-            }
+
+            $basePath = $this->path->databasePath('seeders/new/');
+            $this->path->validatePath($basePath);
+
         } catch (\Exception $e) {
             echo Message::error('Erro ao criar o diretório de seeders: '.$e->getMessage());
             exit;
         }
 
-        return base_path('database/seeders/'.$fileName);
+        return $basePath.$fileName;
     }
 }

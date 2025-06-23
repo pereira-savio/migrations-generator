@@ -26,7 +26,6 @@ class MySqlGenerator implements MigrationGeneratorInterface
 
     /**
      * Gera as migrations para todas as tabelas do banco de dados MySQL.
-     * @return void
      */
     public function migrations(): void
     {
@@ -35,7 +34,6 @@ class MySqlGenerator implements MigrationGeneratorInterface
 
     /**
      * Gera as seeds para todas as tabelas do banco de dados MySQL.
-     * @return void
      */
     public function seeds(): void
     {
@@ -68,8 +66,6 @@ class MySqlGenerator implements MigrationGeneratorInterface
 
     /**
      * Gera as migrations para cada tabela encontrada no banco de dados.
-     *
-     * @return void
      */
     public function generateMigrations(): void
     {
@@ -105,8 +101,6 @@ class MySqlGenerator implements MigrationGeneratorInterface
 
     /**
      * Gera as seeds para cada tabela encontrada no banco de dados.
-     * 
-     * @return void
      */
     public function generateSeeds(): void
     {
